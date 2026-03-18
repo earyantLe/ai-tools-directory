@@ -1,0 +1,93 @@
+name: 🔍 Weekly Data Validation
+
+on:
+  schedule:
+    # 每周日 UTC 时间 12:00 (北京时间 20:00) 执行
+    - cron: '0 12 * * 0'
+  workflow_dispatch: # 允许手动触发
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: 📥 Checkout code
+      uses: actions/checkout@v4
+    
+    - name: 🔧 Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+    
+    - name: 📋 Validate Data Structure
+      run: |
+        node -e "
+        const data = require('./data.json');
+        const fs = require('fs');
+        
+        let errors = [];
+        let warnings = [];
+        
+        // 检查必需字段
+        data.tools.forEach((tool, index) => {
+          if (!tool.id) errors.push('Tool ' + index + ': Missing id');
+          if (!tool.name) errors.push('Tool ' + index + ': Missing name');
+          if (!tool.description) errors.push('Tool ' + index + ': Missing description');
+          if (!tool.category) errors.push('Tool ' + index + ': Missing category');
+          if (!tool.url) errors.push('Tool ' + index + ': Missing url');
+          
+          // 检查分类有效性
+          const validCategories = ['基础大模型', '大模型产品', 'AI Agent', '开发框架', '工具链', '多模态创作', '企业解决方案', '研究 & 学习'];
+          if (tool.category && !validCategories.includes(tool.category)) {
+            warnings.push('Tool ' + tool.name + ': Invalid category \"' + tool.category + '\"');
+          }
+          
+          // 检查评分范围
+          if (tool.rating && (tool.rating < 1 || tool.rating > 5)) {
+            warnings.push('Tool ' + tool.name + ': Rating out of range (' + tool.rating + ')');
+          }
+        });
+        
+        // 输出报告
+        console.log('=== Validation Report ===');
+        console.log('Total tools:', data.tools.length);
+        console.log('Errors:', errors.length);
+        console.log('Warnings:', warnings.length);
+        
+        if (errors.length > 0) {
+          console.log('\n❌ Errors:');
+          errors.forEach(e => console.log('  - ' + e));
+        }
+        
+        if (warnings.length > 0) {
+          console.log('\n⚠️ Warnings:');
+          warnings.forEach(w => console.log('  - ' + w));
+        }
+        
+        // 保存报告
+        const report = {
+          date: new Date().toISOString(),
+          total: data.tools.length,
+          errors: errors.length,
+          warnings: warnings.length,
+          errorList: errors,
+          warningList: warnings
+        };
+        fs.writeFileSync('validation-report.json', JSON.stringify(report, null, 2));
+        
+        // 如果有错误，退出码为 1
+        if (errors.length > 0) {
+          process.exit(1);
+        }
+        "
+    
+    - name: 📊 Upload Validation Report
+      uses: actions/upload-artifact@v4
+      if: always()
+      with:
+        name: validation-report
+        path: validation-report.json
+        retention-days: 30
+    
+    - name: ✅ Validation Complete
+      run: echo "Data validation completed successfully!"
