@@ -1,0 +1,126 @@
+{
+  "tools": [
+    {
+      "name": "Midjourney",
+      "description": "AI 驱动的图像生成工具，通过文本描述创建精美视觉内容",
+      "category": "图像",
+      "pricing": "付费",
+      "url": "https://www.midjourney.com",
+      "tags": ["图像生成", "创意设计", "艺术"]
+    },
+    {
+      "name": "Runway",
+      "description": "AI 视频编辑和生成平台，支持视频到视频、文本到视频等功能",
+      "category": "视频",
+      "pricing": "免费 + 付费",
+      "url": "https://runwayml.com",
+      "tags": ["视频编辑", "视频生成", "创意工具"]
+    },
+    {
+      "name": "GitHub Copilot",
+      "description": "AI 编程助手，自动完成代码、提供建议",
+      "category": "开发",
+      "pricing": "付费",
+      "url": "https://github.com/features/copilot",
+      "tags": ["编程", "代码补全", "效率"]
+    },
+    {
+      "name": "Notion AI",
+      "description": "集成在 Notion 中的 AI 写作助手，帮助撰写、编辑、总结内容",
+      "category": "写作",
+      "pricing": "付费",
+      "url": "https://www.notion.so/product/ai",
+      "tags": ["写作", "笔记", "办公"]
+    },
+    {
+      "name": "Jasper",
+      "description": "AI 内容创作平台，专注于营销文案和博客文章",
+      "category": "写作",
+      "pricing": "付费",
+      "url": "https://www.jasper.ai",
+      "tags": ["营销", "内容创作", "博客"]
+    },
+    {
+      "name": "Stable Diffusion",
+      "description": "开源 AI 图像生成模型，可本地部署",
+      "category": "图像",
+      "pricing": "免费",
+      "url": "https://stability.ai",
+      "tags": ["图像生成", "开源", "本地部署"]
+    },
+    {
+      "name": "Claude",
+      "description": "Anthropic 开发的 AI 助手，擅长长文本理解和创作",
+      "category": "对话",
+      "pricing": "免费 + 付费",
+      "url": "https://claude.ai",
+      "tags": ["对话", "写作", "分析"]
+    },
+    {
+      "name": "Perplexity",
+      "description": "AI 搜索引擎，提供带引用的答案",
+      "category": "搜索",
+      "pricing": "免费 + 付费",
+      "url": "https://www.perplexity.ai",
+      "tags": ["搜索", "研究", "问答"]
+    },
+    {
+      "name": "ElevenLabs",
+      "description": "AI 语音合成平台，生成自然的人声",
+      "category": "音频",
+      "pricing": "免费 + 付费",
+      "url": "https://elevenlabs.io",
+      "tags": ["语音", "TTS", "配音"]
+    },
+    {
+      "name": "Cursor",
+      "description": "AI 优先的代码编辑器，集成 GPT-4 等模型",
+      "category": "开发",
+      "pricing": "免费 + 付费",
+      "url": "https://cursor.sh",
+      "tags": ["编辑器", "编程", "效率"]
+    },
+    {
+      "name": "Canva AI",
+      "description": "设计平台集成 AI 功能，包括图像生成、魔法编辑等",
+      "category": "图像",
+      "pricing": "免费 + 付费",
+      "url": "https://www.canva.com",
+      "tags": ["设计", "图像编辑", "模板"]
+    },
+    {
+      "name": "Luma AI",
+      "description": "AI 视频生成和 3D 捕捉工具",
+      "category": "视频",
+      "pricing": "免费 + 付费",
+      "url": "https://lumalabs.ai",
+      "tags": ["视频生成", "3D", "创意"]
+    },
+    {
+      "name": "Hugging Face",
+      "description": "AI 模型社区和平台，提供数千个开源模型",
+      "category": "开发",
+      "pricing": "免费",
+      "url": "https://huggingface.co",
+      "tags": ["模型", "开源", "社区"]
+    },
+    {
+      "name": "Gamma",
+      "description": "AI 演示文稿生成工具，快速创建精美 PPT",
+      "category": "办公",
+      "pricing": "免费 + 付费",
+      "url": "https://gamma.app",
+      "tags": ["PPT", "演示", "办公"]
+    },
+    {
+      "name": "Suno",
+      "description": "AI 音乐生成平台，创作完整歌曲",
+      "category": "音频",
+      "pricing": "免费 + 付费",
+      "url": "https://suno.ai",
+      "tags": ["音乐", "创作", "歌曲"]
+    }
+  ],
+  "categories": ["全部", "图像", "视频", "音频", "开发", "写作", "对话", "搜索", "办公"],
+  "pricing": ["全部", "免费", "付费", "免费 + 付费"]
+}

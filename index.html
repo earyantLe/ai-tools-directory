@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI 工具聚合 - 发现最好的 AI 工具</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header>
+        <div class="container">
+            <h1>🤖 AI 工具聚合</h1>
+            <p class="subtitle">发现和使用最好的 AI 工具，提升你的工作效率</p>
+        </div>
+    </header>
+
+    <main class="container">
+        <div class="filters">
+            <div class="search-box">
+                <input type="text" id="searchInput" placeholder="搜索工具名称或描述...">
+            </div>
+            <div class="filter-group">
+                <label>分类：</label>
+                <select id="categoryFilter">
+                    <option value="全部">全部</option>
+                </select>
+            </div>
+            <div class="filter-group">
+                <label>价格：</label>
+                <select id="pricingFilter">
+                    <option value="全部">全部</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="stats">
+            <span id="toolCount">加载中...</span> 个工具
+        </div>
+
+        <div id="toolsGrid" class="tools-grid">
+            <!-- 工具卡片将通过 JS 动态加载 -->
+        </div>
+    </main>
+
+    <footer>
+        <div class="container">
+            <p>💡 持续更新中 | 数据来源：网络公开资源</p>
+        </div>
+    </footer>
+
+    <script src="data.json"></script>
+    <script src="script.js"></script>
+</body>
+</html>
