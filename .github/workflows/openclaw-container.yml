@@ -1,0 +1,125 @@
+name: 🤖 OpenClaw Auto Runner
+
+on:
+  schedule:
+    # 每天北京时间 10:00 执行
+    - cron: '0 2 * * *'
+  workflow_dispatch: # 允许手动触发
+
+jobs:
+  openclaw-task:
+    runs-on: ubuntu-latest
+    container:
+      image: node:18-bullseye
+    
+    steps:
+    - name: 📥 Checkout code
+      uses: actions/checkout@v4
+      with:
+        token: ${{ secrets.GH_PAT }}
+        fetch-depth: 0
+    
+    - name: 📦 Install OpenClaw
+      run: |
+        echo "🔧 安装 OpenClaw..."
+        npm install -g openclaw
+        openclaw --version
+    
+    - name: 🔐 Setup OpenClaw Config
+      run: |
+        echo "🔐 配置 OpenClaw..."
+        
+        # 创建配置目录
+        mkdir -p /root/.openclaw/{workspace,cron,logs}
+        
+        # 配置 Feishu (从 Secrets 读取)
+        cat > /root/.openclaw/config.json << EOF
+        {
+          "channels": {
+            "feishu": {
+              "appId": "${{ secrets.FEISHU_APP_ID }}",
+              "appSecret": "${{ secrets.FEISHU_APP_SECRET }}",
+              "botName": "AI Tools Bot"
+            }
+          },
+          "defaultChannel": "feishu",
+          "model": "bailian/qwen3.5-plus"
+        }
+        EOF
+        
+        echo "✅ 配置完成"
+    
+    - name: 📂 Setup Workspace
+      run: |
+        echo "📂 设置工作区..."
+        
+        # 复制项目文件到工作区
+        cp -r $GITHUB_WORKSPACE/* /root/.openclaw/workspace/
+        
+        # 进入 AI 工具目录
+        cd /root/.openclaw/workspace/ai-tools-directory
+        
+        # 显示当前状态
+        echo "=== 工作区状态 ==="
+        ls -la
+        echo "工具数量: $(node -e "console.log(require('./data.json').tools.length)")"
+    
+    - name: 🚀 Execute OpenClaw Task
+      run: |
+        echo "🚀 执行 OpenClaw 任务..."
+        
+        cd /root/.openclaw/workspace/ai-tools-directory
+        
+        # 方式 1: 直接执行 Node.js 脚本更新数据
+        cat > update-tools.js << 'EOF'
+        const fs = require('fs');
+        const https = require('https');
+        
+        // 读取现有数据
+        const dataPath = './data.json';
+        let data = JSON.parse(fs.readFileSync(dataPath, 'utf8'));
+        
+        console.log(`📊 当前工具数：${data.tools.length}`);
+        
+        // 这里可以添加实际的爬虫逻辑或 API 调用
+        // 示例：添加一个新工具
+        const newTool = {
+          id: data.tools.length + 1,
+          name: "新 AI 工具",
+          nameEn: "New AI Tool",
+          description: "自动发现的新 AI 工具",
+          category: "AI Agent",
+          pricing: "免费 + 付费",
+          url: "https://example.com",
+          tags: ["AI", "Automation"],
+          rating: 4.5,
+          favorites: 0,
+          logo: "🤖",
+          features: ["Feature 1", "Feature 2"]
+        };
+        
+        data.tools.push(newTool);
+        fs.writeFileSync(dataPath, JSON.stringify(data, null, 2));
+        
+        console.log(`✅ 添加了 1 个新工具`);
+        console.log(`📊 新工具数：${data.tools.length}`);
+        EOF
+        
+        node update-tools.js
+    
+    - name: 📝 Commit and Push
+      run: |
+        cd /root/.openclaw/workspace/ai-tools-directory
+        
+        git config user.name "OpenClaw Bot"
+        git config user.email "openclaw-actions@github.com"
+        
+        git add .
+        git commit -m "feat: 自动更新 AI 工具数据 $(date '+%Y-%m-%d %H:%M')" || echo "No changes to commit"
+        git push origin master
+    
+    - name: 📬 Send Notification
+      if: always()
+      run: |
+        echo "✅ OpenClaw 任务完成！"
+        echo "📊 查看运行日志：https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"
