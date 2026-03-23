@@ -16,12 +16,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
 // ===== 数据加载 =====
 async function initData() {
+    showLoading();
     try {
         const response = await fetch('data.json');
         const data = await response.json();
         siteInfo = data.siteInfo || {};
         allTools = data.tools || [];
-        
+
         // 更新页面标题
         if (siteInfo.title) {
             document.title = siteInfo.title;
@@ -29,21 +30,31 @@ async function initData() {
         if (siteInfo.subtitle) {
             document.getElementById('siteSubtitle').textContent = siteInfo.subtitle;
         }
-        
+
+        // 更新页脚最后更新时间
+        if (siteInfo.lastUpdated) {
+            const updateEl = document.getElementById('lastUpdate');
+            if (updateEl) {
+                updateEl.textContent = '最后更新：' + siteInfo.lastUpdated;
+            }
+        }
+
         // 初始化筛选器
         populateFilters(data.categories, data.pricings);
-        
+
         // 生成标签云
         generateTagsCloud();
-        
+
         // 初始渲染
         filterAndRender();
-        
+
         // 更新统计
         updateStats();
     } catch (error) {
         console.error('加载数据失败:', error);
         showError('加载数据失败，请刷新页面重试');
+    } finally {
+        hideLoading();
     }
 }
 
@@ -583,6 +594,17 @@ function showError(message) {
             <button class="reset-btn" onclick="location.reload()">刷新页面</button>
         </div>
     `;
+}
+
+// ===== 加载动画 =====
+function showLoading() {
+    const spinner = document.getElementById('loadingSpinner');
+    if (spinner) spinner.classList.add('active');
+}
+
+function hideLoading() {
+    const spinner = document.getElementById('loadingSpinner');
+    if (spinner) spinner.classList.remove('active');
 }
 
 // ===== 键盘快捷键 =====

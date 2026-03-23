@@ -856,12 +856,38 @@ footer {
 }
 
 .loading-spinner {
+    display: none;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 9999;
+    background: var(--card-bg);
+    padding: 40px 60px;
+    border-radius: 16px;
+    box-shadow: var(--shadow-lg);
+    text-align: center;
+}
+
+.loading-spinner.active {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+}
+
+.loading-spinner .spinner {
     width: 50px;
     height: 50px;
     border: 4px solid var(--tag-bg);
     border-top-color: var(--primary-color);
     border-radius: 50%;
     animation: spin 1s linear infinite;
+}
+
+.loading-spinner p {
+    color: var(--text-secondary);
+    margin: 0;
 }
 
 @keyframes spin {

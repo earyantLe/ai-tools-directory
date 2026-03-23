@@ -58,3 +58,33 @@ jobs:
           }
           console.log('✅ All checks passed');
           "
+
+      - name: 🔗 Check URLs (optional)
+        run: |
+          echo "Checking URLs (sample check)..."
+          node -e "
+          const https = require('https');
+          const http = require('http');
+          const data = require('./data.json');
+
+          // 只检查前 5 个 URL 作为示例
+          const sample = data.tools.slice(0, 5);
+
+          Promise.all(sample.map(tool => {
+            return new Promise((resolve) => {
+              const lib = tool.url.startsWith('https') ? https : http;
+              const req = lib.get(tool.url, { timeout: 5000 }, (res) => {
+                resolve({ name: tool.name, url: tool.url, status: res.statusCode });
+              });
+              req.on('error', (err) => {
+                resolve({ name: tool.name, url: tool.url, status: 0, error: err.message });
+              });
+            });
+          })).then(results => {
+            console.log('=== URL Check Results ===');
+            results.forEach(r => {
+              const status = r.status === 200 ? '✅' : '❌';
+              console.log(status + ' ' + r.name + ': ' + r.url + ' (' + (r.status || 'ERROR') + ')');
+            });
+          });
+          "
