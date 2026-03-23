@@ -1,54 +1,45 @@
-name: 🚀 Auto Deploy
+name: 🚀 Deploy
 
 on:
   push:
-    branches: [ master ]
+    branches: [master]
   pull_request:
-    branches: [ master ]
+    branches: [master]
+  workflow_dispatch:
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
-    
     steps:
-    - name: 📥 Checkout code
-      uses: actions/checkout@v4
-    
-    - name: 📦 Setup Node.js
-      uses: actions/setup-node@v4
-      with:
-        node-version: '18'
-    
-    - name: 🔍 Validate JSON
-      run: |
-        echo "Validating data.json..."
-        node -e "JSON.parse(require('fs').readFileSync('data.json', 'utf8'))" && echo "✅ JSON valid" || echo "❌ JSON invalid"
-    
-    - name: 📊 Generate Stats
-      run: |
-        echo "=== AI Tools Statistics ==="
-        node -e "
-        const data = require('./data.json');
-        console.log('Total tools:', data.tools.length);
-        const byCategory = data.tools.reduce((acc, tool) => {
-          acc[tool.category] = (acc[tool.category] || 0) + 1;
-          return acc;
-        }, {});
-        console.log('By category:');
-        Object.entries(byCategory).forEach(([cat, count]) => {
-          console.log('  -', cat + ':', count);
-        });
-        "
-    
-    - name: 🌐 Deploy to GitHub Pages
-      uses: peaceiris/actions-gh-pages@v4
-      with:
-        github_token: ${{ secrets.GITHUB_TOKEN }}
-        publish_dir: ./
-        publish_branch: gh-pages
-        force_orphan: true
-    
-    - name: ✅ Deployment Complete
-      run: |
-        echo "🎉 Deployment successful!"
-        echo "🌐 Site: https://earyantle.github.io/ai-tools-directory/"
+      - name: 📥 Checkout
+        uses: actions/checkout@v4
+
+      - name: 🔧 Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+
+      - name: ✅ Validate JSON
+        run: node -e "JSON.parse(require('fs').readFileSync('data.json', 'utf8'))" && echo "✅ JSON valid"
+
+      - name: 📊 Generate Stats
+        run: |
+          echo "=== AI Tools Statistics ==="
+          node -e "
+          const data = require('./data.json');
+          console.log('Total tools:', data.tools.length);
+          const byCategory = data.tools.reduce((acc, tool) => {
+            acc[tool.category] = (acc[tool.category] || 0) + 1;
+            return acc;
+          }, {});
+          Object.entries(byCategory).forEach(([cat, count]) => {
+            console.log('  -', cat + ':', count);
+          });
+          "
+
+      - name: 🌐 Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./
+          publish_branch: gh-pages

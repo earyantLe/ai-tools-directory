@@ -1,0 +1,60 @@
+name: ✅ CI
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+    branches: [master]
+  schedule:
+    - cron: '0 12 * * 0'  # 每周日 20:00 北京
+  workflow_dispatch:
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: 📥 Checkout
+        uses: actions/checkout@v4
+
+      - name: 🔧 Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+
+      - name: 📋 Validate Data
+        run: |
+          node -e "
+          const data = require('./data.json');
+          const fs = require('fs');
+
+          let errors = [];
+          const validCategories = ['基础大模型', '大模型产品', 'AI Agent', '开发框架', '工具链', '多模态创作', '企业解决方案', '研究 & 学习'];
+          const validPricings = ['免费', '付费', '免费 + 付费'];
+
+          data.tools.forEach((tool, index) => {
+            if (!tool.id) errors.push('Tool ' + index + ': Missing id');
+            if (!tool.name) errors.push('Tool ' + index + ': Missing name');
+            if (!tool.description) errors.push('Tool ' + index + ': Missing description');
+            if (!tool.category) errors.push('Tool ' + index + ': Missing category');
+            if (!tool.url) errors.push('Tool ' + index + ': Missing url');
+            if (tool.category && !validCategories.includes(tool.category)) {
+              errors.push('Tool ' + tool.name + ': Invalid category');
+            }
+            if (tool.pricing && !validPricings.includes(tool.pricing)) {
+              errors.push('Tool ' + tool.name + ': Invalid pricing');
+            }
+            if (tool.rating && (tool.rating < 1 || tool.rating > 5)) {
+              errors.push('Tool ' + tool.name + ': Rating out of range');
+            }
+          });
+
+          console.log('=== Validation Report ===');
+          console.log('Total tools:', data.tools.length);
+          console.log('Errors:', errors.length);
+
+          if (errors.length > 0) {
+            errors.forEach(e => console.log('  - ' + e));
+            process.exit(1);
+          }
+          console.log('✅ All checks passed');
+          "

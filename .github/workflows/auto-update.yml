@@ -1,0 +1,51 @@
+name: 🤖 Auto Update
+
+on:
+  schedule:
+    - cron: '0 2 * * *'  # 每天 10:00 北京
+  workflow_dispatch:
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - name: 📥 Checkout
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GH_PAT }}
+          fetch-depth: 0
+
+      - name: 🔧 Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+
+      - name: 📊 Update Data
+        id: update
+        run: |
+          node -e "
+          const fs = require('fs');
+          const data = JSON.parse(fs.readFileSync('data.json', 'utf8'));
+
+          console.log('当前工具数:', data.tools.length);
+
+          // 在这里添加实际的更新逻辑
+          // 例如：调用 API 获取新工具、验证 URL 有效性等
+
+          fs.writeFileSync('data.json', JSON.stringify(data, null, 2));
+          console.log('更新完成');
+          "
+
+      - name: 📝 Commit and Push
+        run: |
+          git config user.name "GitHub Actions Bot"
+          git config user.email "actions@github.com"
+
+          git add data.json
+          if ! git diff --staged --quiet; then
+            git commit -m "feat: 自动更新 $(date '+%Y-%m-%d')"
+            git push origin master
+            echo "已推送更新"
+          else
+            echo "无变化，跳过提交"
+          fi
